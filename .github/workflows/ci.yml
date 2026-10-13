@@ -18,7 +18,7 @@ jobs:
         with:
           php-version: '8.4'
           coverage: none
-      - uses: ramsey/composer-install@v3
+      - uses: ramsey/composer-install@v4
       - run: composer lint
 
   test:
@@ -39,5 +39,5 @@ jobs:
           php-version: ${{ matrix.php }}
           coverage: none
       - run: composer require --no-update "typo3/cms-core:${{ matrix.typo3 }}" "typo3/cms-fluid:${{ matrix.typo3 }}"
-      - uses: ramsey/composer-install@v3
+      - uses: ramsey/composer-install@v4
       - run: composer test
