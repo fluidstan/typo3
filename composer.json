@@ -1,0 +1,97 @@
+{
+    "name": "fluidstan/typo3",
+    "description": "TYPO3 integration for FluidStan: boots TYPO3, registers its Fluid namespaces and resolves EXT: paths",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Sascha Egerer",
+            "email": "sascha.egerer@flowd.de",
+            "homepage": "https://flowd.de",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "fluidstan/fluidstan": "^0.1",
+        "typo3/cms-core": "^13.4 || ^14.0",
+        "typo3/cms-fluid": "^13.4 || ^14.0"
+    },
+    "require-dev": {
+        "ergebnis/composer-normalize": "^2.47",
+        "fluidstan-example/shop": "@dev",
+        "friendsofphp/php-cs-fixer": "^3.75",
+        "php-parallel-lint/php-parallel-lint": "^1.4",
+        "phpstan/phpstan": "^2.1.30",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpunit/phpunit": "^11.5",
+        "rector/rector": "^2.0",
+        "saschaegerer/phpstan-typo3": "^2.2 || ^3.1",
+        "shipmonk/composer-dependency-analyser": "^1.8"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "docs/example/shop"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "FluidStan\\TYPO3\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "FluidStan\\TYPO3\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "typo3/class-alias-loader": true,
+            "typo3/cms-composer-installers": true
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "0.1.x-dev"
+        }
+    },
+    "scripts": {
+        "check": [
+            "@lint",
+            "@test"
+        ],
+        "fix": [
+            "@fix:rector",
+            "@fix:cs",
+            "@composer normalize --no-check-lock"
+        ],
+        "fix:cs": "php-cs-fixer fix",
+        "fix:rector": "rector process",
+        "fluidstan:example": "fluidstan -c docs/example/fluidstan.neon",
+        "lint": [
+            "@lint:syntax",
+            "@lint:composer",
+            "@lint:cs",
+            "@lint:phpstan",
+            "@lint:rector",
+            "@lint:deps"
+        ],
+        "lint:composer": [
+            "@composer validate --strict",
+            "@composer normalize --dry-run --no-check-lock"
+        ],
+        "lint:cs": "php-cs-fixer fix --dry-run --diff",
+        "lint:deps": "composer-dependency-analyser",
+        "lint:phpstan": "phpstan analyse --memory-limit=1G",
+        "lint:rector": "rector process --dry-run",
+        "lint:syntax": "parallel-lint --no-progress --exclude vendor --exclude .cache .",
+        "test": "phpunit"
+    }
+}

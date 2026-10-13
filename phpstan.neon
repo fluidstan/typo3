@@ -1,0 +1,27 @@
+includes:
+    - phar://phpstan.phar/conf/bleedingEdge.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+    - vendor/phpstan/phpstan-phpunit/rules.neon
+    - vendor/saschaegerer/phpstan-typo3/extension.neon
+
+parameters:
+    level: max
+    paths:
+        - src
+        - tests
+        - docs/example/shop/Classes
+        - rector.php
+        - .php-cs-fixer.dist.php
+        - composer-dependency-analyser.php
+    tmpDir: .cache/phpstan
+    checkUninitializedProperties: true
+    checkBenevolentUnionTypes: true
+    ignoreErrors:
+        # Booting TYPO3 from the outside is only possible through SystemEnvironmentBuilder, as typo3-console and the testing framework do
+        -
+            identifiers:
+                - classConstant.internal
+                - staticMethod.internal
+            message: '#SystemEnvironmentBuilder#'

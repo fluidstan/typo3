@@ -1,0 +1,21 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:shop="http://typo3.org/ns/Vendor/Shop/Components/ComponentCollection"
+      data-namespace-typo3-fluid="true">
+<f:argument name="product" type="Vendor\Shop\Domain\Model\Product" />
+<f:argument name="data" type="array" description="tt_content record of the product list element" />
+
+<article class="m-product-teaser">
+    <f:image image="{product.image}" width="400c" alt="{product.title}" />
+    <h2><f:link.typolink parameter="{product.detailPage}">{product.title}</f:link.typolink></h2>
+    <p class="m-product-teaser__teaser">{product.teaserText}</p>
+    <time>{product.releasedAt}</time>
+    <shop:atom.price amount="{product.price}" />
+    <shop:atom.price amount="{product.image}" />
+    <f:translate key="LLL:EXT:shop/Resources/Private/Language/locallang.xlf:price" arguments="{product.price}" />
+    <ul>
+        <f:for each="{product.categories}" as="category"><li>{category.name}</li></f:for>
+    </ul>
+    <f:if condition="{product.available}"><span>{stock} in stock</span></f:if>
+    <footer>{data.header}</footer>
+</article>
+</html>

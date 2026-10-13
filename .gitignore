@@ -1,0 +1,6 @@
+/vendor/
+/composer.lock
+/.cache/
+/public/
+/var/
+.DS_Store
