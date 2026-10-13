@@ -1,0 +1,9 @@
+parameters:
+    environment: FluidStan\TYPO3\Typo3Environment
+    bootstrapFiles:
+        - ../../vendor/autoload.php
+    paths:
+        - EXT:shop/Resources/Private/Components
+    namespaces:
+        shop: Vendor\Shop\Components\ComponentCollection
+    tmpDir: ../../.cache/fluidstan-example
