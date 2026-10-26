@@ -7,4 +7,8 @@ return [
     'shop' => [
         \Vendor\Shop\Components\ComponentCollection::class,
     ],
+    // The collection configured in ComponentCollections.php
+    'ui' => [
+        'Vendor\\Shop\\Elements',
+    ],
 ];

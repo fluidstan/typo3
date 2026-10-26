@@ -9,7 +9,8 @@ use FluidStan\Configuration\ConfigurationLoader;
 use FluidStan\Diagnostics\Diagnostic;
 use FluidStan\TYPO3\Typo3Environment;
 use PHPUnit\Framework\TestCase;
-use TYPO3\CMS\Fluid\Event\ModifyNamespacesEvent;
+use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperResolverDelegateRegistry;
+use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperResolverDelegateInterface;
 use Vendor\Shop\Components\ComponentCollection;
 
 /**
@@ -47,15 +48,28 @@ final class ExampleTest extends TestCase
             static fn(Diagnostic $d): string => \sprintf('%s:%s %s', basename($d->file), $d->line, $d->identifier),
             $result->diagnostics->all(),
         );
-        $this->assertSame([
+        // Namespaces.php, ComponentCollections.php and the delegate registry all arrived with TYPO3 14.1
+        $declarativeCollections = class_exists(ViewHelperResolverDelegateRegistry::class);
+        $this->assertSame(array_merge([
             'ProductTeaser.html:10 fluidstan.property.unresolvable',
             'ProductTeaser.html:11 fluidstan.output.object',
             'ProductTeaser.html:13 fluidstan.argument.type',
             'ProductTeaser.html:14 fluidstan.argument.type',
             'ProductTeaser.html:16 fluidstan.property.unresolvable',
             'ProductTeaser.html:18 variable.undefined',
-        ], $actual);
-        $this->assertSame(2, $result->templateCount);
+        ], $declarativeCollections ? [
+            // The "ui" collection comes from Configuration/Fluid/ComponentCollections.php; its variables
+            // are provided by a PSR-14 event at runtime, so an unknown variable cannot be reported
+            'ProductTeaser.html:20 fluidstan.argument.type',
+            'Badge.html:5 fluidstan.property.unresolvable',
+        ] : [
+            // TYPO3 13 has no declarative collections: "ui" is not a namespace, Badge is a component without a collection
+            'ProductTeaser.html:20 fluid.parser',
+            'ProductTeaser.html:20 fluidstan.output.object',
+            'Badge.html:5 fluidstan.property.unresolvable',
+            'Badge.html:5 variable.undefined',
+        ]), $actual);
+        $this->assertSame(3, $result->templateCount);
 
         // TYPO3 is booted by the analysis above; the environment reads the global namespaces from it
         $environment = new Typo3Environment();
@@ -63,11 +77,16 @@ final class ExampleTest extends TestCase
 
         $namespaces = $environment->getNamespaces();
         $this->assertSame(['TYPO3Fluid\\Fluid\\ViewHelpers', 'TYPO3\\CMS\\Fluid\\ViewHelpers'], $namespaces['f']);
-        if (class_exists(ModifyNamespacesEvent::class)) {
+        $delegates = $environment->getResolverDelegates();
+        if ($declarativeCollections) {
             // Registered globally by the extension's Configuration/Fluid/Namespaces.php (TYPO3 14.1)
             $this->assertSame([ComponentCollection::class], $namespaces['shop'] ?? null);
+            $this->assertSame(['Vendor\\Shop\\Elements'], $namespaces['ui'] ?? null);
+            // Built by TYPO3 from Configuration/Fluid/ComponentCollections.php
+            $this->assertInstanceOf(ViewHelperResolverDelegateInterface::class, $delegates['Vendor\\Shop\\Elements'] ?? null);
         } else {
             $this->assertArrayNotHasKey('shop', $namespaces);
+            $this->assertSame([], $delegates);
         }
     }
 }

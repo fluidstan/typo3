@@ -12,6 +12,7 @@ use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\DependencyInjection\FailsafeContainer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperResolverDelegateRegistry;
 use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperResolverFactoryInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperResolverDelegateInterface;
 
@@ -93,11 +94,20 @@ final class Typo3Environment implements EnvironmentInterface
     }
 
     /**
+     * The delegates TYPO3 14 builds itself: the component collections of every
+     * Configuration/Fluid/ComponentCollections.php and collection classes registered through
+     * dependency injection, keyed by the namespace string templates refer to.
+     *
      * @return array<string, ViewHelperResolverDelegateInterface>
      */
     public function getResolverDelegates(): array
     {
-        return [];
+        $container = $this->container();
+        if (!class_exists(ViewHelperResolverDelegateRegistry::class) || !$container->has(ViewHelperResolverDelegateRegistry::class)) {
+            return [];
+        }
+
+        return $container->get(ViewHelperResolverDelegateRegistry::class)->getAll();
     }
 
     public function resolvePath(string $path): ?string
