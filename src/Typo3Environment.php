@@ -35,47 +35,56 @@ final class Typo3Environment implements EnvironmentInterface
 
     public function boot(Configuration $configuration): void
     {
-        if (\defined('TYPO3')) {
-            $this->container = GeneralUtility::getContainer();
-            return;
+        if (!\defined('TYPO3')) {
+            if (!class_exists(Bootstrap::class)) {
+                throw new \RuntimeException('TYPO3 is not autoloadable. Add the project\'s vendor/autoload.php to "bootstrapFiles".');
+            }
+
+            SystemEnvironmentBuilder::run(0, SystemEnvironmentBuilder::REQUESTTYPE_CLI);
+            Bootstrap::init($this->findClassLoader());
         }
 
-        if (!class_exists(Bootstrap::class)) {
-            throw new \RuntimeException('TYPO3 is not autoloadable. Add the project\'s vendor/autoload.php to "bootstrapFiles".');
-        }
-
-        $classLoader = $this->findClassLoader();
-        SystemEnvironmentBuilder::run(0, SystemEnvironmentBuilder::REQUESTTYPE_CLI);
-        $this->container = Bootstrap::init($classLoader);
-        if ($this->container instanceof FailsafeContainer) {
-            // TYPO3 falls back to the failsafe container when config/system/settings.php is missing. That
-            // container knows the system extensions only: neither ext_localconf.php nor the Fluid
-            // configuration of the project's extensions would be loaded.
+        // Whoever booted TYPO3: it falls back to the failsafe container when config/system/settings.php
+        // is missing. That container knows the system extensions only, so neither ext_localconf.php nor
+        // the Fluid configuration of the project's extensions would be loaded.
+        $container = GeneralUtility::getContainer();
+        if ($container instanceof FailsafeContainer) {
             throw new \RuntimeException('TYPO3 could not be booted completely because config/system/settings.php is missing. FluidStan needs a configured project; a minimal settings.php with SYS/encryptionKey is enough, no database is used.');
         }
+
+        $this->container = $container;
     }
 
     /**
-     * The global namespaces as TYPO3 assembles them for its own ViewHelperResolver: every
-     * Configuration/Fluid/Namespaces.php (TYPO3 14), $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']
-     * set in ext_localconf.php files and the result of the ModifyNamespacesEvent.
+     * The global namespaces as TYPO3 assembles them for its own ViewHelperResolver, in TYPO3's order:
+     * every Configuration/Fluid/Namespaces.php (TYPO3 14.1), $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']
+     * set in ext_localconf.php files and the result of the ModifyNamespacesEvent. Fluid resolves a
+     * ViewHelper from the last entry of a namespace backwards, so the order matters.
+     *
+     * @return array<string, list<string>|null>
      */
     public function getNamespaces(): array
     {
-        $namespaces = [
-            'f' => ['TYPO3Fluid\\Fluid\\ViewHelpers', 'TYPO3\\CMS\\Fluid\\ViewHelpers'],
-        ];
-        foreach ($this->container()->get(ViewHelperResolverFactoryInterface::class)->create()->getNamespaces() as $identifier => $phpNamespaces) {
-            $list = $namespaces[$identifier] ?? [];
-            foreach (\is_array($phpNamespaces) ? $phpNamespaces : [$phpNamespaces] as $phpNamespace) {
-                // Ignored namespaces (null) have nothing to analyse; delegates are registered by class name
-                if (\is_string($phpNamespace) && !\in_array($phpNamespace, $list, true)) {
-                    $list[] = $phpNamespace;
+        $namespaces = [];
+        foreach ($this->container()->get(ViewHelperResolverFactoryInterface::class)->create()->getNamespaces() as $identifier => $entries) {
+            if ($entries === null) {
+                // An ignored namespace: Fluid leaves its tags untouched
+                $namespaces[$identifier] = null;
+                continue;
+            }
+
+            $list = [];
+            foreach ($entries as $entry) {
+                if (\is_string($entry)) {
+                    $list[] = $entry;
                 }
             }
 
             $namespaces[$identifier] = $list;
         }
+
+        // TYPO3 always registers "f"; keep Fluid's defaults should a setup have removed it
+        $namespaces['f'] ??= ['TYPO3Fluid\\Fluid\\ViewHelpers', 'TYPO3\\CMS\\Fluid\\ViewHelpers'];
 
         return $namespaces;
     }

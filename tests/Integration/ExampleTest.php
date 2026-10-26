@@ -9,7 +9,7 @@ use FluidStan\Configuration\ConfigurationLoader;
 use FluidStan\Diagnostics\Diagnostic;
 use FluidStan\TYPO3\Typo3Environment;
 use PHPUnit\Framework\TestCase;
-use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Fluid\Event\ModifyNamespacesEvent;
 use Vendor\Shop\Components\ComponentCollection;
 
 /**
@@ -63,8 +63,8 @@ final class ExampleTest extends TestCase
 
         $namespaces = $environment->getNamespaces();
         $this->assertSame(['TYPO3Fluid\\Fluid\\ViewHelpers', 'TYPO3\\CMS\\Fluid\\ViewHelpers'], $namespaces['f']);
-        if ((new Typo3Version())->getMajorVersion() >= 14) {
-            // Registered globally by the extension's Configuration/Fluid/Namespaces.php
+        if (class_exists(ModifyNamespacesEvent::class)) {
+            // Registered globally by the extension's Configuration/Fluid/Namespaces.php (TYPO3 14.1)
             $this->assertSame([ComponentCollection::class], $namespaces['shop'] ?? null);
         } else {
             $this->assertArrayNotHasKey('shop', $namespaces);

@@ -40,7 +40,7 @@ This package makes FluidStan work inside a TYPO3 project:
 - **Boots TYPO3** like a CLI command, without opening a database connection, so the dependency
   injection container, extension paths and configuration are available while templates are parsed.
 - **Registers TYPO3's global Fluid namespaces** exactly as TYPO3 assembles them: `f` includes
-  `TYPO3\CMS\Fluid\ViewHelpers`, and every `Configuration/Fluid/Namespaces.php` (TYPO3 14),
+  `TYPO3\CMS\Fluid\ViewHelpers`, and every `Configuration/Fluid/Namespaces.php` (TYPO3 14.1),
   `$GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']` and the `ModifyNamespacesEvent` are honoured.
 - **Resolves `EXT:` paths** in the configuration, so templates are addressed the TYPO3 way.
 
