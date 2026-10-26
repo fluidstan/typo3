@@ -37,10 +37,11 @@ category read through an `ObjectStorage`, and an undefined variable. Run it your
 
 This package makes FluidStan work inside a TYPO3 project:
 
-- **Boots TYPO3** in failsafe mode, without a database, so the package manager, extension paths and
-  configuration are available while templates are parsed.
-- **Registers TYPO3's Fluid namespaces**: `f` includes `TYPO3\CMS\Fluid\ViewHelpers`, and everything
-  configured in `$GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']` is picked up.
+- **Boots TYPO3** like a CLI command, without opening a database connection, so the dependency
+  injection container, extension paths and configuration are available while templates are parsed.
+- **Registers TYPO3's global Fluid namespaces** exactly as TYPO3 assembles them: `f` includes
+  `TYPO3\CMS\Fluid\ViewHelpers`, and every `Configuration/Fluid/Namespaces.php` (TYPO3 14),
+  `$GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']` and the `ModifyNamespacesEvent` are honoured.
 - **Resolves `EXT:` paths** in the configuration, so templates are addressed the TYPO3 way.
 
 Supports TYPO3 13.4 and 14 on PHP 8.2 or newer, in Composer mode.
@@ -76,7 +77,8 @@ parameters:
 - `bootstrapFiles` must include the project's autoloader; TYPO3 is booted from it.
 - `paths` take `EXT:` notation or paths relative to the configuration file.
 - `namespaces` lists component collections and ViewHelper namespaces that are not registered globally
-  in TYPO3. A component collection is given by its class name.
+  in TYPO3, for example a collection a TYPO3 13 project registers only in `ext_localconf.php`. A
+  component collection is given by its class name. Globally registered namespaces need no entry.
 - `tmpDir` holds the generated code and PHPStan's cache; keep it out of version control.
 
 Then run the analysis:
@@ -88,8 +90,10 @@ vendor/bin/fluidstan --error-format=json       # for CI tooling
 ```
 
 Run it where TYPO3 runs. In a Docker or DDEV setup that is the PHP container, because the boot reads
-`config/system/settings.php` and `additional.php` like any other TYPO3 CLI command. No database
-connection is opened.
+`config/system/settings.php` and `additional.php`, loads every extension's `ext_localconf.php` and builds
+the dependency injection container like any other TYPO3 CLI command. No database connection is opened.
+Without a `settings.php` TYPO3 only offers its failsafe mode, which knows the system extensions alone, so
+FluidStan stops with a message; a minimal `settings.php` with `SYS/encryptionKey` is enough.
 
 ## What gets typed
 
@@ -121,7 +125,7 @@ connection is opened.
 ## Development
 
 ```bash
-composer install          # installs TYPO3 and the example extension for the test suite
+composer install          # installs TYPO3 (typo3/minimal) and the example extension for the test suite
 composer fluidstan:example # analyse docs/example
 composer check            # everything below
 composer lint             # syntax, composer.json, php-cs-fixer, PHPStan (max, strict, phpstan-typo3), Rector, dependency analysis
@@ -130,5 +134,6 @@ composer test             # PHPUnit
 ```
 
 Booting TYPO3 from the outside goes through `SystemEnvironmentBuilder`, which TYPO3 marks as internal;
-the same route typo3-console and the testing framework take. CI runs the suite on PHP 8.2 to 8.5
-against TYPO3 13.4 and 14.
+the same route typo3-console and the testing framework take. The package root is a minimal TYPO3 project
+with `config/system/settings.php`, so the example can be analysed and the integration test boots TYPO3
+for real. CI runs the suite on PHP 8.2 to 8.5 against TYPO3 13.4 and 14.

@@ -14,6 +14,7 @@
     "require": {
         "php": "^8.2",
         "fluidstan/fluidstan": "^0.1",
+        "psr/container": "^1.1 || ^2.0",
         "typo3/cms-core": "^13.4 || ^14.0",
         "typo3/cms-fluid": "^13.4 || ^14.0"
     },
@@ -29,7 +30,8 @@
         "phpunit/phpunit": "^11.5",
         "rector/rector": "^2.0",
         "saschaegerer/phpstan-typo3": "^2.2 || ^3.1",
-        "shipmonk/composer-dependency-analyser": "^1.8"
+        "shipmonk/composer-dependency-analyser": "^1.8",
+        "typo3/minimal": "^13.4 || ^14.0"
     },
     "repositories": [
         {

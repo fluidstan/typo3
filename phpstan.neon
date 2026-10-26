@@ -25,3 +25,11 @@ parameters:
                 - classConstant.internal
                 - staticMethod.internal
             message: '#SystemEnvironmentBuilder#'
+        # The container and the resolver factory are the only way to read what TYPO3 assembles for Fluid; TYPO3 marks them internal
+        -
+            identifiers:
+                - staticMethod.internal
+                - instanceof.internalClass
+                - classConstant.internalInterface
+                - method.internalInterface
+            message: '#GeneralUtility::getContainer|FailsafeContainer|ViewHelperResolverFactoryInterface#'
