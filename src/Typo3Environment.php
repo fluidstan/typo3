@@ -83,8 +83,11 @@ final class Typo3Environment implements EnvironmentInterface
             $namespaces[$identifier] = $list;
         }
 
-        // TYPO3 always registers "f"; keep Fluid's defaults should a setup have removed it
-        $namespaces['f'] ??= ['TYPO3Fluid\\Fluid\\ViewHelpers', 'TYPO3\\CMS\\Fluid\\ViewHelpers'];
+        // TYPO3 always registers "f"; keep Fluid's defaults should a setup have removed it. A setup that
+        // ignores it on purpose (null) keeps that.
+        if (!\array_key_exists('f', $namespaces)) {
+            $namespaces['f'] = ['TYPO3Fluid\\Fluid\\ViewHelpers', 'TYPO3\\CMS\\Fluid\\ViewHelpers'];
+        }
 
         return $namespaces;
     }
