@@ -15,8 +15,9 @@
         "php": "^8.2",
         "fluidstan/fluidstan": "^0.2",
         "psr/container": "^1.1 || ^2.0",
-        "typo3/cms-core": "^13.4 || ^14.0",
-        "typo3/cms-fluid": "^13.4 || ^14.0"
+        "typo3/cms-core": "^13.4 || ^14.2",
+        "typo3/cms-fluid": "^13.4 || ^14.2",
+        "typo3fluid/fluid": "^4.4 || ^5.0"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.47",
@@ -31,7 +32,7 @@
         "rector/rector": "^2.0",
         "saschaegerer/phpstan-typo3": "^2.2 || ^3.1",
         "shipmonk/composer-dependency-analyser": "^1.8",
-        "typo3/minimal": "^13.4 || ^14.0"
+        "typo3/minimal": "^13.4 || ^14.2"
     },
     "repositories": [
         {

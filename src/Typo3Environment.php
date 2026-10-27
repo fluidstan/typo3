@@ -12,6 +12,7 @@ use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\DependencyInjection\FailsafeContainer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperResolverDelegateRegistry;
 use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperResolverFactoryInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperResolverDelegateInterface;
 
@@ -57,7 +58,7 @@ final class Typo3Environment implements EnvironmentInterface
 
     /**
      * The global namespaces as TYPO3 assembles them for its own ViewHelperResolver, in TYPO3's order:
-     * every Configuration/Fluid/Namespaces.php (TYPO3 14.1), $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']
+     * every Configuration/Fluid/Namespaces.php (TYPO3 14), $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']
      * set in ext_localconf.php files and the result of the ModifyNamespacesEvent. Fluid resolves a
      * ViewHelper from the last entry of a namespace backwards, so the order matters.
      *
@@ -93,11 +94,20 @@ final class Typo3Environment implements EnvironmentInterface
     }
 
     /**
+     * The delegates TYPO3 14 builds itself: the component collections of every
+     * Configuration/Fluid/ComponentCollections.php and collection classes registered through
+     * dependency injection, keyed by the namespace string templates refer to.
+     *
      * @return array<string, ViewHelperResolverDelegateInterface>
      */
     public function getResolverDelegates(): array
     {
-        return [];
+        $container = $this->container();
+        if (!class_exists(ViewHelperResolverDelegateRegistry::class) || !$container->has(ViewHelperResolverDelegateRegistry::class)) {
+            return [];
+        }
+
+        return $container->get(ViewHelperResolverDelegateRegistry::class)->getAll();
     }
 
     public function resolvePath(string $path): ?string

@@ -30,6 +30,8 @@ parameters:
             identifiers:
                 - staticMethod.internal
                 - instanceof.internalClass
+                - classConstant.internalClass
                 - classConstant.internalInterface
+                - method.internalClass
                 - method.internalInterface
-            message: '#GeneralUtility::getContainer|FailsafeContainer|ViewHelperResolverFactoryInterface#'
+            message: '#GeneralUtility::getContainer|FailsafeContainer|ViewHelperResolverFactoryInterface|ViewHelperResolverDelegateRegistry#'
