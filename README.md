@@ -69,8 +69,6 @@ parameters:
     namespaces:
         my: My\Site\Components\ComponentCollection
     tmpDir: var/cache/fluidstan
-    phpstan:
-        level: 8
 ```
 
 - `environment` activates this package.
