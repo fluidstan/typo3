@@ -29,11 +29,13 @@ templates and components powered by [PHPStan](https://phpstan.org). Developed an
 FluidStan analyses Fluid templates without rendering them and reports property paths that do not exist
 on the model, values that cannot be rendered, loops over non-iterables, wrong ViewHelper and component
 argument types, undefined variables, unknown slots and more. The screenshot shows the analysis of
-[`docs/example`](docs/example), a small `shop` extension with an Extbase model and two components: a typo
+[`docs/example`](docs/example), a small `shop` extension with an Extbase model, a component collection
+class and a collection configured in `Configuration/Fluid/ComponentCollections.php` (TYPO3 14.1): a typo
 in a property path, a `DateTimeImmutable` rendered without formatting, a file reference passed where a
 number is expected, a float passed to the `arguments` of `f:translate`, a missing getter on a related
-category read through an `ObjectStorage`, and an undefined variable. Run it yourself with
-`composer fluidstan:example`.
+category read through an `ObjectStorage`, an undefined variable, an `ObjectStorage` passed to the `count`
+argument of the configured collection's component, and a property read on that `int` inside it. Run it
+yourself with `composer fluidstan:example`.
 
 This package makes FluidStan work inside a TYPO3 project:
 
@@ -113,6 +115,11 @@ FluidStan stops with a message; a minimal `settings.php` with `SYS/encryptionKey
 - **ViewHelper arguments** are validated against the ViewHelper's argument definitions with the rules
   Fluid 5 applies at runtime. ViewHelpers that take services through their constructor are instantiated
   without the constructor to read their definitions, which is sufficient for the core and most extensions.
+- **Variables a collection class provides** through `getAdditionalVariables()` are typed from that method
+  without running it, so a `{component.class}` your collection builds is a `string` and an unknown key is
+  reported; see the core README for the details. Collections from `ComponentCollections.php` get theirs
+  from a PSR-14 event at runtime, which the analysis cannot see, so those are `mixed`.
+- **Conditions** narrow: inside `<f:if condition="{product}">` an optional `product` is no longer `null`.
 
 ## Roadmap
 
