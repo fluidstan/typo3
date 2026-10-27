@@ -5,5 +5,6 @@ parameters:
     paths:
         - EXT:shop/Resources/Private/Components
     namespaces:
+        # TYPO3 14.1 registers it globally through Configuration/Fluid/Namespaces.php; TYPO3 13 needs it here
         shop: Vendor\Shop\Components\ComponentCollection
     tmpDir: ../../.cache/fluidstan-example
