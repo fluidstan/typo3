@@ -58,7 +58,7 @@ final class Typo3Environment implements EnvironmentInterface
 
     /**
      * The global namespaces as TYPO3 assembles them for its own ViewHelperResolver, in TYPO3's order:
-     * every Configuration/Fluid/Namespaces.php (TYPO3 14.1), $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']
+     * every Configuration/Fluid/Namespaces.php (TYPO3 14), $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']
      * set in ext_localconf.php files and the result of the ModifyNamespacesEvent. Fluid resolves a
      * ViewHelper from the last entry of a namespace backwards, so the order matters.
      *

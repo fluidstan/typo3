@@ -12,24 +12,26 @@ the Fluid configuration TYPO3 sees.
   were loaded, so globally registered namespaces had to be repeated in `fluidstan.neon`
   ([#3](https://github.com/fluidstan/typo3/issues/3)). TYPO3 is now booted like a CLI command, without
   a database connection, and the namespaces come from TYPO3's own `ViewHelperResolverFactory`: every
-  `Namespaces.php` (TYPO3 14.1), `TYPO3_CONF_VARS` and the `ModifyNamespacesEvent`, in TYPO3's order.
+  `Namespaces.php` (TYPO3 14), `TYPO3_CONF_VARS` and the `ModifyNamespacesEvent`, in TYPO3's order.
   A project without `config/system/settings.php` is reported instead of analysed with incomplete
   namespaces; a minimal `settings.php` with `SYS/encryptionKey` is enough.
 - `phpstan.level` is gone from the configuration example; the core package rejects it.
 
 ### Added
 
-- **Component collections configured in TYPO3 14.1** through `Configuration/Fluid/ComponentCollections.php`,
+- **Component collections configured in TYPO3 14** through `Configuration/Fluid/ComponentCollections.php`,
   without a PHP class, and collection classes registered through dependency injection
   ([#4](https://github.com/fluidstan/typo3/issues/4)). Their variables come from the
   `ProvideStaticVariablesToComponentEvent` at runtime and are `mixed` in the analysis.
 - Everything FluidStan 0.2 brings: variables a collection class provides through
   `getAdditionalVariables()`, Fluid's variable scoping, and narrowing through `f:if`.
-- An integration test boots TYPO3 and analyses the example extension, on TYPO3 13.4 and 14.
+- An integration test boots TYPO3 and analyses the example extension, on TYPO3 13.4 and 14.2.
 
 ### Requirements
 
 - `fluidstan/fluidstan` ^0.2
+- TYPO3 13.4 or 14.2 and newer. 14.1 is not supported: it has the declarative collections but not
+  yet the delegate registry that hands them to the resolver.
 - A TYPO3 project with `config/system/settings.php`; the package root is such a project (`typo3/minimal`)
   for the example and the test suite.
 

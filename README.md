@@ -30,7 +30,7 @@ FluidStan analyses Fluid templates without rendering them and reports property p
 on the model, values that cannot be rendered, loops over non-iterables, wrong ViewHelper and component
 argument types, undefined variables, unknown slots and more. The screenshot shows the analysis of
 [`docs/example`](docs/example), a small `shop` extension with an Extbase model, a component collection
-class and a collection configured in `Configuration/Fluid/ComponentCollections.php` (TYPO3 14.1): a typo
+class and a collection configured in `Configuration/Fluid/ComponentCollections.php` (TYPO3 14): a typo
 in a property path, a `DateTimeImmutable` rendered without formatting, a file reference passed where a
 number is expected, a float passed to the `arguments` of `f:translate`, a missing getter on a related
 category read through an `ObjectStorage`, an undefined variable, an `ObjectStorage` passed to the `count`
@@ -42,14 +42,14 @@ This package makes FluidStan work inside a TYPO3 project:
 - **Boots TYPO3** like a CLI command, without opening a database connection, so the dependency
   injection container, extension paths and configuration are available while templates are parsed.
 - **Registers TYPO3's global Fluid namespaces** exactly as TYPO3 assembles them: `f` includes
-  `TYPO3\CMS\Fluid\ViewHelpers`, and every `Configuration/Fluid/Namespaces.php` (TYPO3 14.1),
+  `TYPO3\CMS\Fluid\ViewHelpers`, and every `Configuration/Fluid/Namespaces.php` (TYPO3 14),
   `$GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']` and the `ModifyNamespacesEvent` are honoured.
 - **Knows TYPO3 14's component collections** defined in `Configuration/Fluid/ComponentCollections.php`,
   without a PHP class, and collection classes registered through dependency injection. Their variables
   come from the `ProvideStaticVariablesToComponentEvent` at runtime and are `mixed` in the analysis.
 - **Resolves `EXT:` paths** in the configuration, so templates are addressed the TYPO3 way.
 
-Supports TYPO3 13.4 and 14 on PHP 8.2 or newer, in Composer mode.
+Supports TYPO3 13.4 and 14.2 or newer on PHP 8.2 or newer, in Composer mode.
 
 ## Installation
 
@@ -144,4 +144,4 @@ composer test             # PHPUnit
 Booting TYPO3 from the outside goes through `SystemEnvironmentBuilder`, which TYPO3 marks as internal;
 the same route typo3-console and the testing framework take. The package root is a minimal TYPO3 project
 with `config/system/settings.php`, so the example can be analysed and the integration test boots TYPO3
-for real. CI runs the suite on PHP 8.2 to 8.5 against TYPO3 13.4 and 14.
+for real. CI runs the suite on PHP 8.2 to 8.5 against TYPO3 13.4 and 14.2.

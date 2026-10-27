@@ -48,7 +48,7 @@ final class ExampleTest extends TestCase
             static fn(Diagnostic $d): string => \sprintf('%s:%s %s', basename($d->file), $d->line, $d->identifier),
             $result->diagnostics->all(),
         );
-        // Namespaces.php, ComponentCollections.php and the delegate registry all arrived with TYPO3 14.1
+        // The delegate registry that hands declarative collections to the resolver exists since TYPO3 14.2
         $declarativeCollections = class_exists(ViewHelperResolverDelegateRegistry::class);
         $this->assertSame(array_merge([
             'ProductTeaser.html:10 fluidstan.property.unresolvable',
@@ -79,7 +79,7 @@ final class ExampleTest extends TestCase
         $this->assertSame(['TYPO3Fluid\\Fluid\\ViewHelpers', 'TYPO3\\CMS\\Fluid\\ViewHelpers'], $namespaces['f']);
         $delegates = $environment->getResolverDelegates();
         if ($declarativeCollections) {
-            // Registered globally by the extension's Configuration/Fluid/Namespaces.php (TYPO3 14.1)
+            // Registered globally by the extension's Configuration/Fluid/Namespaces.php (TYPO3 14)
             $this->assertSame([ComponentCollection::class], $namespaces['shop'] ?? null);
             $this->assertSame(['Vendor\\Shop\\Elements'], $namespaces['ui'] ?? null);
             // Built by TYPO3 from Configuration/Fluid/ComponentCollections.php
