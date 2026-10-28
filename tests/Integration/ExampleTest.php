@@ -61,11 +61,14 @@ final class ExampleTest extends TestCase
             // The "ui" collection comes from Configuration/Fluid/ComponentCollections.php; its variables
             // are provided by a PSR-14 event at runtime, so an unknown variable cannot be reported
             'ProductTeaser.html:20 fluidstan.argument.type',
+            // strict mode: the optional "count" argument may be null
+            'Badge.html:5 fluidstan.property.nullable',
             'Badge.html:5 fluidstan.property.unresolvable',
         ] : [
             // TYPO3 13 has no declarative collections: "ui" is not a namespace, Badge is a component without a collection
             'ProductTeaser.html:20 fluid.parser',
             'ProductTeaser.html:20 fluidstan.output.object',
+            'Badge.html:5 fluidstan.property.nullable',
             'Badge.html:5 fluidstan.property.unresolvable',
             'Badge.html:5 variable.undefined',
         ]), $actual);

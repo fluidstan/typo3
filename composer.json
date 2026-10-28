@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "fluidstan/fluidstan": "^0.2",
+        "fluidstan/fluidstan": "^0.3",
         "psr/container": "^1.1 || ^2.0",
         "typo3/cms-core": "^13.4 || ^14.2",
         "typo3/cms-fluid": "^13.4 || ^14.2",
@@ -62,7 +62,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "0.2.x-dev"
+            "dev-main": "0.3.x-dev"
         }
     },
     "scripts": {
