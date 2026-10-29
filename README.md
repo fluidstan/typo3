@@ -120,6 +120,15 @@ FluidStan stops with a message; a minimal `settings.php` with `SYS/encryptionKey
   reported; see the core README for the details. Collections from `ComponentCollections.php` get theirs
   from a PSR-14 event at runtime, which the analysis cannot see, so those are `mixed`.
 - **Conditions** narrow: inside `<f:if condition="{product}">` an optional `product` is no longer `null`.
+- **Variables ViewHelpers assign** are detected, in your ViewHelpers and in TYPO3's: inside
+  `<f:link.typolink parameter="{link}" partsAs="parts">`, `{parts}` is a known `array`. Where detection
+  cannot follow the code, declare the assignment in `fluidstan.neon` under `viewHelperAssignments` or with
+  a `@fluidstan-assigns` tag; the core README has the details.
+- **Strict mode** (`strict: true`) also reports what Fluid tolerates silently, such as a string passed to
+  an `int` argument or a path through a nullable Extbase relation; see the core README.
+- **A baseline** lets an existing project adopt FluidStan: `vendor/bin/fluidstan --generate-baseline`
+  records the current errors in `fluidstan-baseline.neon`, and with `includes: [fluidstan-baseline.neon]`
+  in `fluidstan.neon` only new ones are reported. `ignoreErrors` works as in PHPStan.
 
 ## Roadmap
 
@@ -127,7 +136,6 @@ FluidStan stops with a message; a minimal `settings.php` with `SYS/encryptionKey
   `{request}`
 - Content Blocks field definitions as the type of `{data}` and of content element component arguments
 - Partials and layouts resolved through TYPO3's template paths from site sets and TypoScript
-- ViewHelper instantiation through the dependency injection container
 - Extbase relations: `ObjectStorage` and lazy-loading proxies unwrapped to their element types
 
 ## Development

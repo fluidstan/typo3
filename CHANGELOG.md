@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.0
+
+Requires `fluidstan/fluidstan` 0.3, which detects the variables ViewHelpers assign, adds a strict mode
+and a baseline. All three work in TYPO3 projects without a change to this package; TYPO3's own
+ViewHelpers are detected too, `f:link.typolink`'s `partsAs` for instance.
+
+### Changed
+
+- The README describes detected ViewHelper assignments, strict mode and the baseline, and no longer
+  lists ViewHelper instantiation through the dependency injection container as planned: argument
+  definitions are read without running constructors, which has been sufficient.
+- The example extension runs with `strict: true`, and its test expects the nullable path it reports.
+
 ## 0.2.0
 
 Requires `fluidstan/fluidstan` 0.2. TYPO3 is booted like a CLI command now, so FluidStan sees exactly
